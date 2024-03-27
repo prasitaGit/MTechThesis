@@ -1,0 +1,24 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%2345678901234567890123456789012345678901234567890123456789012345678901234567890
+%        1         2         3         4         5         6         7         8
+% THESIS CONCLUSIONS
+\def\baselinestretch{1}
+\chapter{Conclusions}
+\label{chap:conclusions}
+\ifpdf
+    \graphicspath{{Conclusions/Figures/PNG/}{Conclusions/Figures/PDF/}{Conclusions/Figures/}}
+\else
+    \graphicspath{{Conclusions/Figures/EPS/}{Conclusions/Figures/}}
+\fi
+\def\baselinestretch{1.0}
+
+% quote
+
+
+The work aims to solve admissible strategies for safety and
+reachability objectives which are arguably the most important among all non-prefix-independent goals. The work uses graph-theoretic notions to provide a solution for the problem at hand. 
+
+The work is a special case of~\cite{PerimeterOfWorldModel,CompositionalSynthesis}
+where only two properties are taken into consideration and much simpler algorithms are proposed for them which are also lower in complexity (precisely $O(2^{|V|log|V|})$ time) than the double exponential algorithm in~\cite{PerimeterOfWorldModel,CompositionalSynthesis}.
+
+The algorithms have been proven to be correct and exhaustive. Previous claims  made by Faella~\cite{AdmissibleInfiniteGames} have also shown to be incorrect. Work on cooperation and rational behavior of players is now an emergent area of research~\cite{AssumptionSynthesis,PerimeterOfWorldModel,CompositionalSynthesis,AdmissibleInfiniteGames,RationalSynthesis} and the work done claims to be the first approach in solving zero sum games with winning conditions as safety and reachability in exponential time with graph-theoretic notions. The work can be extended to solve objectives like \textit{B$\ddot{u}chi$}, \textit{Muller}, \textit{Parity}, etc. in future. The work is also useful in compositional synthesis where each component is to be composed and admissible strategies are to be determined and shown to hold good.

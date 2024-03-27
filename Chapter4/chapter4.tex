@@ -1,0 +1,500 @@
+\chapter{Admissible Strategies for Reachability Games}
+\label{Sec:Reachability}
+The reachability goal requires the game to visit a node in a set $R$
+after finitely many steps. Algorithm~\ref{alg:algorithm4}~\cite{SynthesisInfiniteGames} is presented for computing the set of winning nodes in a reachability
+game. Algorithm~\ref{alg:algorithm4} computes the winning set of nodes
+by computing a least fixed point of a monotone operator on
+$(2^{V},\subseteq)$~\cite{SynthesisInfiniteGames}.
+
+\begin{algorithm}
+	\caption{Winning Nodes for Reachability Games}
+	\textbf{Input} Game structure $G := (V,E)$ and $R \subseteq V$, the set of reachable nodes \\ 
+	\textbf{Output} Set of Winning States $W$
+	\label{alg:algorithm4}
+	\begin{algorithmic}[1]
+		\STATE \textit{T} := R
+		\STATE $Y_{0}$ := \textit{T}
+		\STATE i := 1
+		\STATE $Y_{i}$ := $\textit{T} \cup \mathit{CPre}(Y_{i-1})$
+		\STATE if $Y_{i} \neq Y_{i-1}$ then i := i + 1. Goto step 4
+		\STATE $W$ := $Y_{i}$
+		\STATE \textbf{return} $W$
+	\end{algorithmic}
+\end{algorithm}
+
+Before presenting the algorithm for computing admissible strategies for reachability games (Algorithm~\ref{alg:algorithm5}), few definitions are required. These definitions apply to the nodes which are not winning for \textit{Player~1} (\ie, not in $W$) in the reachability game.
+
+A \textit{frontier node} is a \textit{Player~2} node which is in $V
+\backslash W$ and has at least one edge to a node in $W$. The set of
+all frontier nodes is denoted by $\mathit{Front}$. $\mathit{FPaths}(v,u)$
+denotes the set of all paths from the \textit{Player~1} node $v$ in
+$V_{1} \backslash W$ to the \textit{Player~2} node $u$ in $\mathit{Front}$ that
+do not include any other \textit{Player~2} node $w$ in $\mathit{Front}$.
+$\mathit{Front}(v)$ denotes the set of all frontier nodes $u$ for which
+$\mathit{FPaths}(v,u) \neq \emptyset$.
+
+A \textit{reachability-admissible path} (r-admissible path in brief) $P$ from $v$ in $V_{1} \backslash W$ to a node $u$ in $\mathit{Front}$ is a path that satisfies the following properties:
+\begin{enumerate}
+	\item $P \in \mathit{FPaths}(v,u)$, and
+	\item there is no other path $P'$ from $v$ to $u$ such that $F(P') \subset F(P)$ where $F(Q)$ is the set of \textit{Player~2} nodes on the path $Q$ that are not in $\mathit{Front}$.
+\end{enumerate}
+
+A \textit{potentially hazardous} node is a node in $(V_{2} \backslash \mathit{Front}) \backslash W$ which has an outgoing path satisfying one of the following conditions:
+\begin{enumerate}
+	\item It can be extended to an infinite path that does not contain a node in $\mathit{Front}$, or
+	\item It can be extended to two or more paths that end in distinct nodes in $\mathit{Front}$ and do not contain any other node in $\mathit{Front}$.
+\end{enumerate}
+
+The set of all potentially hazardous nodes is denoted by
+$\mathit{PH}$. To determine the values of \textit{Player~1} admissible
+strategies at a node $v$ from which $W$ is reachable in the graph $G$, a rank is assigned to each node in the components of the underlying
+undirected subgraph $G'$ of $G$ induced by $\mathit{Front}(v)$. The
+idea is an admissible strategy would choose a successor of $v$ that
+lies on an r-admissible path to a highest ranked node in
+$\mathit{Front}(v)$. If all r-admissible paths to highest rank nodes
+have at least one potentially hazardous node satisfying condition 1
+(in the definition of a potentially hazardous node), then an
+admissible strategy would also choose a successor of $v$ that lies on
+an r-admissible path to the next highest ranked node in
+$\mathit{Front}(v)$. To differentiate between the two conditions in
+the definition of a potentially hazardous node, ranks are assigned to the vertices in $V \backslash (W \cup \mathit{Front})$ as
+well. The rank for the frontier nodes is defined inductively starting
+with rank 1 for the nodes in $G'$ which have out-degree 0. Any node
+with unassigned rank that has an edge to a rank $i$ node is assigned
+rank $i+1$. For example, in Figure~\ref{figurelabel8} the rank of
+$v_{2}$ is 1 and $v_{1}$ is 2 and the \textit{Player~1} strategy
+$\sigma_{1}$ that chooses the edge $(v_{0},v_{1})$, \ie, toward a
+higher ranked node, is better than the \textit{Player~1} strategy
+$\sigma_{2}$ that chooses the edge $(v_{0},v_{2})$, \ie, toward a
+lower ranked node, against the \textit{Player~2} strategy \{$v_{1}
+\mapsto v_{4}, v_{2} \mapsto v_{3}$\} as explained in
+Chapter~\ref{Sec:Preliminaries}. The rank of the remaining nodes in $V
+\backslash(W \cup \mathit{Front})$ is computed as follows:
+\begin{enumerate}
+	\item All \textit{Player~1} nodes and \textit{Player~2} nodes that are
+	not potentially hazardous are assigned rank 0.
+	\item The potentially hazardous nodes satisfying condition 1 (in
+	the definition of a potentially hazardous node) are assigned
+	rank -1.
+	\item The potentially hazardous nodes satisfying condition 2 (in
+	the same definition) are assigned the rank of the lowest ranked
+	node in $\mathit{Front}(v)$ to which they have an r-admissible path.
+\end{enumerate}
+\begin{figure}[thpb]
+	\centering
+	\begin{tikzpicture}
+	\node at ( 0,-4) [player1] (1) {$v$};
+	\node at ( -2,0) [player2] (2) {$u$};
+	\node at ( 2,0) [player2] (3) {$w$};
+	\node at ( 3.5,0) [player2] (8) {$t$};
+	\node at ( -0.5,-3) [player1] (9) {$v_{1}$};
+	\node at ( 0.5,-3) [player1] (10) {$v_{2}$};
+	\node at ( 1.5,-3) [player1] (11) {$v_{3}$};
+	\node at ( -1,-2) [player2] (4) {$x$};
+	\node at ( 1,-2) [player2] (5) {$y$};
+	\node at ( -3,-2) [player1] (6) {$z$};
+	\node at ( 0,2) [otherLabel] (7) {$W$};
+	
+	\draw (2) edge (3);
+	\draw (2) edge (7);
+	\draw (3) edge (7);
+	\draw (4) edge (6);
+	\draw (3) edge (8);
+	\draw (1) edge (9);
+	\draw (1) edge (10);
+	\draw (1) edge (11);
+	\draw (6) edge[loop above] (6);
+	\draw (8) edge[loop above] (8);
+	\draw [->,snake=snake] (9) -- (4);
+	\draw [->,snake=snake] (11) --  (1.5,-2.6) -- (1.75, -2.5) --  (2.25,-0.5) -- (3);
+	\draw [->,snake=snake] (10) -- (5);
+	\draw [->,snake=snake] (5) -- (2);
+	\draw [->,snake=snake] (4) -- (2);
+	\draw [->,snake=snake] (5) -- (3);
+	\end{tikzpicture}
+	\caption{Example demonstrating conditions}
+	\label{figurelabel9}
+\end{figure}
+
+Figure~\ref{figurelabel9} explains the need for assigning ranks to
+nodes in $V \backslash(W \cup \mathit{Front})$. \textit{Player~2} can prevent
+\textit{Player~1} from entering $W$ forever by choosing the edge
+$(x,z)$ at the potentially hazardous node $x$ while the potentially
+hazardous node $y$ will always help \textit{Player~1} in reaching a
+frontier node $u$ or $w$ depending on the outgoing edge \textit{Player
+	2} chooses at $y$. These nodes are differentiated
+while determining the admissible strategy for \textit{Player~1} at
+$v$, hence $x$ is assigned the rank -1 and $y$ the rank
+0.
+
+Algorithm~\ref{alg:algorithm5} computes the set of
+admissible strategies for reachability games. In step 1,
+the winning set of nodes are computed $W$ for \textit{Player~1} using
+Algorithm~\ref{alg:algorithm4}. Since any winning strategy of a
+\textit{Player 1} winning node is \textit{admissible}, the rest of the
+algorithm computes values of admissible strategies for the losing
+nodes. In step 3, the set of frontier nodes are computed and stored
+in $\mathit{Front}$. In steps 5-14, the ranks of the remaining nodes are computed
+in $V \backslash W$. The loop terminates when all nodes in $V
+\backslash(W \cup \mathit{Front})$ have been assigned a rank. In step 15, the set of all nodes are computed in $\mathit{Front}(v)$ for $v \in V_{1} \backslash
+W$. In steps 17-30, the induced subgraph $G'$ is constructed for the
+nodes in $\mathit{Front}(v)$, if $\mathit{Front}(v) \neq \emptyset$. In step 31, Algorithm~\ref{alg:algorithm6} is executed to compute the rank of
+every vertex in the induced subgraph $G'$ and the remaining vertices
+in $V \backslash W$. In step 34,
+Algorithm~\ref{alg:algorithm7} is executed to compute the values of
+admissible strategies for every component $C$ of the underlying
+undirected graph of $G'$. In steps 40-42, the strategies for
+\textit{Player~1} are returned.
+\newline
+\newline
+Algorithm~\ref{alg:algorithm6} computes the rank for the nodes in $G'$. In steps 5 and 6, the nodes with out-degree 0 to 1 are initialized. In steps 9-12, ranks to the remaining nodes in $G'$ are assigned by checking if they have an outgoing edge to a node with the previously assigned rank. The value of rank at every iteration is incremented. The algorithm terminates when every node of $G'$ has been assigned a rank. 
+\newline
+\newline
+Algorithm~\ref{alg:algorithm7} computes the values of admissible strategies at $v$ for component $C$  of the underlying undirected graph of $G'$. The following predicates are defined to describe the algorithm:
+\begin{enumerate}
+	\item $\mathrm{Lies}(v,v',P) \triangleq $ the edge $(v,v')$ lies on the path $P$ from $v$;
+	\item $\mathrm{rAdmissible}(P,v,S,r) \triangleq $ $P$ is an r-admissible path from $v$ to a node in $S$ where all nodes in $S$ have rank $r$.
+\end{enumerate}
+The following sets are defined to describe the algorithm:
+\begin{enumerate}
+	\item $\mathrm{\mathit{PH}}(P) \triangleq $ the set of potentially hazardous nodes on the r-admissible path $P$;
+	\item $\mathrm{Nodes}(P) \triangleq $ the set of nodes on an r-admissible path $P$ except the first and last one.
+\end{enumerate}
+
+Let $X$ be the set of all nodes $u$ in $C$, the present component of $G'$ whose rank is $r$, where $r$ is the current rank in the iteration. Let $h$ be the highest rank assigned to any node in $C$. The algorithm includes $v'$ in the set $A$ of values of admissible strategies at $v$ when one of the following conditions is satisfied, where the conditions are checked from top to bottom:
+\begin{enumerate}
+	\item $cond1 \triangleq \exists Q,r[r = h \: \wedge \: \mathrm{rAdmissible}(Q,v,X,r) \:  \wedge \: \mathrm{Lies}(v,v',Q) \: \wedge \: \mathrm{\mathit{PH}}(Q) = \emptyset]$
+	%\smallskip
+	\item $cond2 \triangleq \exists Q,r[r \neq h \: \wedge \: \mathrm{rAdmissible}(Q,v,X,r) \:  \wedge \: \mathrm{Lies}(v,v',Q) \: \wedge \: \mathrm{\mathit{PH}}(Q) \neq \emptyset \newline
+	\wedge \forall w \in \mathrm{Nodes}(Q)[rank(w) = 0 \: \vee \: r \leq rank(w) \leq h] ]$
+	%\smallskip
+	\item $cond3 \triangleq \exists Q,r[r \neq h \: \wedge \: \mathrm{rAdmissible}(Q,v,X,r) \: \wedge \: \mathrm{Lies}(v,v',Q) \: \wedge \: \mathrm{\mathit{PH}}(Q) = \emptyset]$  
+	%\smallskip
+	\item $cond4 \triangleq \exists Q,r[\mathrm{rAdmissible}(Q,v,X,r) \: \wedge \: \mathrm{Lies}(v,v',Q) \: \wedge \: \mathrm{\mathit{PH}}(Q) \neq \emptyset]$
+\end{enumerate}
+
+Figure~\ref{figurelabel9} explains the need for conditions $cond1$ to
+$cond4$. The r-admissible path $(v--x--u)$ illustrates the use for
+$cond4$ due to the edge $(x,z)$ which results in $x$ having rank
+-1. Further, the r-admissible paths $(v--y--u)$ and $(v--y--w)$ show
+the use for $cond2$ due to the nature of $y$ whereas the path
+$(v--w)$ shows the use for $cond3$ as the path does not have any
+potentially hazardous node. Since $cond1$ is not satisfied (which is
+the same as $cond3$ except the path should be from $v$ to $u$ instead
+of $w$), the \textit{Player~1} strategy $\sigma_{1}$ that chooses
+$(v,v_{1})$ that lies on the r-admissible path $(v--x--u)$ is no
+better than the \textit{Player~1} strategy $\sigma_{2}$ that chooses
+$(v,v_{2})$ that lies on any of the two r-admissible paths
+$(v--y--u)$ or $(v--y--w)$ against any \textit{Player~2} strategy. On
+the other hand, the \textit{Player~1} strategy $\sigma_{2}$ that
+chooses $(v,v_{2})$ performs better than the \textit{Player~1}
+strategy $\sigma_{3}$ that chooses $(v,v_{3})$ that lies on the
+r-admissible path $(v--w)$ against the \textit{Player~2} strategy
+\{$u \mapsto k\in W, w \mapsto t, t \mapsto t$\}. Hence $\sigma_{1}$
+and $\sigma_{2}$ are admissible strategies and not $\sigma_{3}$. The
+algorithm iterates from the highest rank to the lowest rank in
+$C$. For each rank $r$, it checks from conditions $cond1$ to $cond4$
+in order. Whenever a condition from $cond1$ to $cond3$ is satisfied,
+it returns the set $A$. If $cond4$ is satisfied, the algorithm
+proceeds to the next lower rank after storing the set $A$ of possible
+values of admissible strategies at node $v \in V_{1} \backslash W$.
+\begin{algorithm}
+	\caption{Admissible Strategies for Reachability Games}
+	\textbf{Input} Game structure $G := (V,E)$ and $R \subseteq V$ \\ 
+	\textbf{Output} Set of admissible strategies for \textit{Player~1}
+	\label{alg:algorithm5}
+	\begin{algorithmic}[1]
+		\STATE Compute $W$ for \textit{Player~1} using Algorithm~\ref{alg:algorithm4}
+		\STATE $G' := null$
+		\STATE $\mathit{Front} := \{ v | v \in V_{2} \backslash W \: and  \: \exists u . (v,u) \in W\}$
+		\FOR{every $v \in V_{1} \backslash W$}
+		\FOR{every node $u \in V_{1} \backslash W \cup V_{2} \backslash (W \cup \mathit{Front} \cup \mathit{PH})$}
+		\STATE $rank(u) := 0$
+		\ENDFOR
+		\FOR{every node $v \in \mathit{PH}$}
+		\IF{$v$ is the source of an infinite path that does not contain a node in $\mathit{Front}$}
+		\STATE $rank(v) := -1$
+		\ELSE
+		\STATE $rank(v) := r$, where $r$ is the lowest ranked node in $\mathit{Front}$ to which it has an r-admissible path
+		\ENDIF
+		\ENDFOR
+		\STATE Let $\mathit{Front}(v)$ be the set containing all $u \in \mathit{Front}$ such that $\mathit{FPaths}(v,u) \neq \emptyset$. 
+		\IF{$\mathit{Front}(v) \neq \emptyset$} 
+		\STATE $G' = (V',E') := (\emptyset,\emptyset)$
+		\FOR{every vertex $p \in \mathit{Front}(v)$}
+		\STATE $V' := V' \cup \{p\}$
+		\ENDFOR
+		\FOR{every pair of nodes $p_{1},p_{2} \in \mathit{Front}(v)$} 
+		\IF{all paths from $p_{1}$ lead to $p_{2}$ in $G \backslash W$ such that no node in $\mathit{Front}$ repeat itself and do not contain a node $u$ with $rank(u) = -1$}
+		\IF{$(p_{2},p_{1}) \in E'$}
+		\STATE $E' := E' \backslash \{(p_{2},p_{1})\}$
+		\ELSE
+		\STATE $E' := E' \cup \{(p_{1},p_{2})\}$
+		\ENDIF
+		\STATE Goto step 11.
+		\ENDIF
+		\ENDFOR
+		\STATE Call Algorithm~\ref{alg:algorithm6} to compute the rank of nodes in $G'$
+		\algstore{algorithm5}
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\begin{algorithmic}[1]
+\algrestore{algorithm5} 
+		\STATE $S(v) := \emptyset$ \COMMENT{$S$ is the set of all $v'$ s.t. $\sigma(v) = v'$ for some admissible strategy $\sigma$}
+		\FOR{every component $C$ in the underlying undirected graph of $G'$}
+		\STATE Execute Algorithm~\ref{alg:algorithm7} for $C$
+		\STATE $S(v) := S(v) \cup A$
+		\ENDFOR
+		\STATE Re-initialize $G' = (V',E')$ with $V' := \emptyset$, $E' := \emptyset$
+		%\ENDFOR
+		\ENDIF
+		\ENDFOR
+		\STATE At any \textit{Player~1} node $v \in W$, play according to any winning strategy
+		\STATE At any \textit{Player~1} node $v \notin W$ such that $\mathit{Front}(v) = \emptyset$, choose an arbitrary move
+		\STATE At any other \textit{Player~1} node $v$, choose any node in $S(v)$
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+	\caption{Compute rank for nodes in $G'$}
+	\label{alg:algorithm6}
+	\begin{algorithmic}[1]
+		\FOR{every component $C$ of the underlying undirected graph of $G'$}
+		\STATE $r := 1$
+		\WHILE{$C$ has vertices left to be assigned a rank}
+		\IF{$r = 1$}
+		\FOR{every vertex $v$ in $G'$ with out-degree 0}
+		\STATE $rank(v) := r$
+		\ENDFOR
+		\ELSE
+		\FOR{every vertex $v$ in $G'$ that does not have a rank and has an edge to $v'$ where $rank(v') = r - 1$}
+		\STATE $rank(v) := r$
+		\ENDFOR
+		\ENDIF
+		\STATE $r := r + 1$
+		\ENDWHILE
+		\ENDFOR
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+	\caption{Values of admissible strategies at $v$ for component $C$}
+	\textbf{Output} $ A = \{v' \, | \, \sigma(v) = v'$ for an admissible strategy at $v\}$  
+	\label{alg:algorithm7}
+	\begin{algorithmic}[1]
+		\STATE $A := \emptyset$
+		\STATE $h := $ highest rank in $C$
+		\STATE $l := $ lowest rank in $C$            
+		\FOR{$r := h$ to $l$}
+		\STATE $flag := 0$
+		\STATE $flag1 := 0$
+		\STATE $X := $ set of all nodes in $C$ with rank $r$
+		\STATE Determine the set $A'$ of all $v'$ s.t. $(v,v')$ lies on an r-admissible path $Q$ from $v$ to a node $u \in X$ where $rank(w) = 0$ for every $w \in \mathrm{Nodes}(Q)$ 
+		\STATE $A := A \cup A'$ \COMMENT{Condition $cond1$ holds. $Q$ does not contain any node in $\mathit{PH}$}
+		\IF{$A' \neq \emptyset$}
+		\STATE $flag := 1$
+		\ENDIF
+		\IF{$r = h$ and $flag = 1$}      
+		\STATE return $A$   \COMMENT{$A' \neq \emptyset$}
+		\ENDIF
+		\STATE Determine the set $A'$ of all $v'$ s.t. $(v,v')$ lies on an r-admissible path $Q$ from $v$ to a node in $X$      \COMMENT{$Q$ contains at least one node in $\mathit{PH}$}
+		\IF{$r = h$}
+		\STATE $A := A \cup A'$ \COMMENT{Condition $cond2$ holds}
+		\ELSE
+		\IF{$A' = \emptyset$} 
+		\STATE return $A$ \COMMENT{$r \neq h$}
+		\ELSE 
+		\FOR{every $v' \in A'$}
+		\STATE $\mathbb{Q} := $ the set of all r-admissible paths that have the edge $(v,v')$
+		\FOR{every $Q \in \mathbb{Q}$}
+		\IF{$w \in \mathrm{Nodes}(Q)$ s.t. $rank(w) = -1$ or $1 \leq rank(w) < r$}
+		\STATE $flag1 := 1$
+		\STATE break
+		\ENDIF
+		\ENDFOR
+		\IF{$flag1 = 0$}
+		\STATE $A := A \backslash \{ v | v \in A'$ in step 8\} \COMMENT{Condition $cond3$ holds}
+		\STATE return $A$
+		\ENDIF
+		\ENDFOR
+		\algstore{algorithm7}
+  \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\begin{algorithmic}[1]
+\algrestore{algorithm7}
+		\IF{$flag = 1$}
+		\STATE return $A$
+		\ELSE
+		\STATE $A := A \cup A'$ from step 16
+		\ENDIF
+		\ENDIF
+		\ENDIF
+		\ENDFOR
+	\end{algorithmic}
+\end{algorithm}
+
+The following results are needed to prove the correctness of
+Algorithm~\ref{alg:algorithm5}
+(Corollary~\ref{corollary2}). 
+Lemma~\ref{lemma2} states that any
+admissible strategy would choose an edge along an r-admissible path
+from any node $v \in V_{1} \backslash W$ from which $W$ is
+reachable. 
+Lemma~\ref{lemma3} states that if any of the conditions
+$cond1$ or $cond2$ or $cond3$ is satisfied for an r-admissible path
+which terminates at a node in $\mathit{Front}$ with rank $r$, then no
+strategy that chooses an edge along an r-admissible path which
+terminates at a node in $\mathit{Front}$ with rank $k < r$ is
+admissible. 
+Lemma~\ref{lemma4} states that if there is an r-admissible path $P$ which 
+terminates at a node in $\mathit{Front}$ with rank $k$ and there is an
+admissible strategy that chooses an edge along an
+r-admissible path which terminates at a node in $\mathit{Front}$
+with rank $r<k$, then $P$ must satisfy only condition $cond4$ and not 
+any of $cond1$ or $cond2$ or $cond3$.
+Theorem~\ref{theorem2} states that a strategy is
+admissible iff at least one of the conditions $cond1,\ldots,cond4$
+holds when they are checked in that order.
+
+\begin{lemma}
+	\label{lemma2}
+	If $\sigma$ is an admissible \textit{Player~1} strategy, $v \in V_{1} \backslash W$ and the set $W$ is reachable from $v$ in $G$, then $\sigma(v) = v'$ implies the pair $(v,v')$ satisfies $\exists Q,r[\mathrm{rAdmissible}(Q,v,X,r) \:  \wedge \: \mathrm{Lies}(v,v',Q)]$.
+\end{lemma}
+\begin{proof}
+	If $v \in V_{1} \backslash W$ and $W$ is reachable from $v$ then there is always an r-admissible path from $v$ by considering only the paths that end in the first node in $\mathit{Front}$ and choosing those among them that contain a minimal number of \textit{Player~2} nodes. An admissible strategy $\sigma$ would always choose a successor node $v'$ at $v$ where $v'$ lies on an r-admissible path because such a path contains a minimal set of \textit{Player~2} nodes that can take the game away from $W$. The proof is along similar lines as Theorem~\ref{theorem1} for safety. 
+\end{proof}
+
+\begin{lemma}
+	\label{lemma3}
+	If $\sigma$ is an admissible strategy with $\sigma(v) = v'$ where $(v,v')$ lies on an r-admissible path $Q$ satisfying the following properties:
+	\begin{enumerate}
+		\item $Q$ terminates at a node in $\mathit{Front}(v)$ with rank $r$ and,
+		\item no node in $Q$ has rank -1
+	\end{enumerate}
+	then, for any other strategy $\sigma'$ with $\sigma'(v) = v''$ where $(v,v'')$ lies on an r-admissible path $Q'$ that terminates at a node in $\mathit{Front}(v)$ with rank $k > r$, the relation $val(\sigma,\rho,v) > val(\sigma',\rho,v)$ holds for all \textit{Player~2} strategies $\rho$.
+\end{lemma}
+\begin{proof}
+	It is observed that if no node $u$ along the r-admissible path $Q$ has $rank(u) = -1$, then the path $Q$ will inevitably reach a node in $\mathit{Front}(v)$ with rank $k \geq 1$ as only the nodes ranked as -1 have the potential to prevent the game from reaching $\mathit{Front}(v)$ forever. 
+	Further, it is clear from the computation of rank that for any two nodes $u,w \in \mathit{Front}(v)$ and in the same component of the underlying undirected graph of $G'$ where $rank(u) > rank(w)$, there does not exist any path from $w$ to $u$ and all paths from $u$ lead to $w$ in $G \backslash W$ and do not include any potentially hazardous node $u'$ with $rank(u') = -1$.
+	
+	From the observations the following cases are to be considered:
+	
+	\textit{Case 1}: $Q'$ has at least one node $u$ where $rank(u) = -1$
+	\newline This implies that a node in $\mathit{Front}(v)$ with rank $k$ may not be reached at all, whereas by following strategy $\sigma$, one can definitely reach $\mathit{Front}(v)$ and enter $W$ through one of the nodes $w \in \mathit{Front}(v)$, with $rank(w) \in [r,h]$. Hence $val(\sigma,\rho,v) > val(\sigma',\rho,v)$ in this case.
+	
+	\textit{Case 2}: $Q'$ has no node $u$ where $rank(u) = -1$
+	\newline This implies that the path $Q$ will inevitably reach a node
+	in $\mathit{Front}(v)$ with rank $k \geq 1$. So, by following
+	strategy $\sigma$, one can definitely reach $\mathit{Front}(v)$ and
+	enter $W$ through one of the nodes $w \in \mathit{Front}(v)$, with
+	$rank(w) \in [r,h]$ and by following strategy $\sigma'$, $W$ can be entered through one of the nodes $w \in \mathit{Front}(v)$, with $rank(w)
+	\in [k,h]$ as shown in Figure~\ref{figurelabel4}. Since $k < r$, if
+	at one of the nodes $u' \in \mathit{Front}(v)$ with $k < rank(u') <=
+	r$ \textit{Player~2} chooses the edge that leads to $W$ and at none
+	of the nodes with rank in $[k,h]$ \textit{Player~2} choose the edge
+	that leads to $W$, then $Out(\sigma,\rho,v) \in \mathit{Win}$ but
+	$Out(\sigma',\rho,v) \notin \mathit{Win}$. Hence $val(\sigma,\rho,v)
+	> val(\sigma',\rho,v)$ in this case as well.
+	\begin{figure}[thpb]
+		\centering
+		\begin{tikzpicture}
+		\node at ( 0,0) [player1] (1) {$v$};
+		\node at ( -2,3) [player2] (2) {$u$};
+		\node at ( 2,3) [player2] (3) {$w$};
+		\node at ( 0,6) [otherLabel] (4) {$W$};
+		\node at ( 5,1) [otherLabel] (5) {$ part\:of\: V \backslash W$};
+		\draw (2) edge (4);
+		\draw (3) edge (4);
+		\draw [->,snake=snake] (1) -- (2);
+		\draw [->,snake=snake] (1) -- (3);
+		\draw [->,snake=snake] (2) -- (3);
+		\draw [->,snake=snake] (3) -- (5);
+		\end{tikzpicture}
+		\caption{Player~1 chooses edge leading to $u$ over edge leading to $v$}
+		\label{figurelabel4}
+	\end{figure}
+\end{proof}
+
+\begin{lemma}
+	\label{lemma4}
+	\begin{enumerate}
+		\item Suppose $\sigma$ is an admissible strategy with $\sigma(v) = v'$ and $(v,v')$ lies on an r-admissible path leading to a node in $\mathit{Front}(v)$ with rank $r \neq h$. Then for all admissible strategies $\sigma'$ with $\sigma'(v) = v''$ where $v' \neq v''$ if the pair $(v,v'')$ lies on an r-admissible path leading to a node in $\mathit{Front}(v)$ with rank $k$, where $r+1 \leq k \leq h$ then the pair $(v,v'')$ satisfies only $cond4$ among the four conditions on page 22-23.
+		\item Suppose $\sigma'$ is an admissible strategy with $\sigma'(v) = v''$ and the pair $(v,v'')$ lies on an r-admissible path leading to a node in $\mathit{Front}(v)$ with rank $k$, where $r+1 \leq k \leq h$, for some $r$ and further satisfies only $cond4$ among the four conditions on page 22-23. Further suppose there is a $v'$ with $v' \neq v''$ and $(v,v')$ lies on an r-admissible path leading to a node in $\mathit{Front}(v)$ with rank $r$. Then there exists an admissible strategy $\sigma$ satisfying $\sigma(v) = v'$. 
+	\end{enumerate}
+\end{lemma}
+\begin{proof}
+	\textit{(1)}: For the sake of contradiction assume that $\sigma$ is an admissible strategy and for an admissible strategies $\sigma'$ with $\sigma'(v) = v''$ where $v' \neq v''$ the pair $(v,v'')$ lies on an r-admissible path $Q$ leading to a node in $\mathit{Front}(v)$ with rank $k$, where $r+1 \leq k \leq h$ and satisfies $cond1$, $cond2$ or $cond3$. If $cond1$ or $cond3$ is satisfied, then there are no potentially hazardous nodes along the r-admissible path $Q$. So a node in $\mathit{Front}(v)$ with rank $k > r$ will definitely be reached along all paths starting with the pair $(v,v'')$. From Lemma~\ref{lemma3}, $val(\sigma',\rho,v) > val(\sigma,\rho,v)$ for any \textit{Player~2} strategy $\rho$. This implies that $Out(\sigma',\rho,v) \in \mathit{Win}$ but $Out(\sigma,\rho,v) \notin \mathit{Win}$, a contradiction. If $cond2$ is satisfied, then all \textit{Player~2} nodes along the r-admissible path $Q$ have rank $r' \in [r+1,h]$. So a node in $\mathit{Front}(v)$ with rank $k > r$ will definitely be reached along all paths starting with the pair $(v,v'')$. From Lemma~\ref{lemma3}, $val(\sigma',\rho,v) > val(\sigma,\rho,v)$ for any \textit{Player~2} strategy $\rho$. This implies that $Out(\sigma',\rho,v) \in \mathit{Win}$ but $Out(\sigma,\rho,v) \notin \mathit{Win}$, again a contradiction.
+	
+	\textit{(2)}: For the sake of contradiction assume that for
+	all admissible strategies $\sigma'$ with $\sigma'(v) = v''$ the pair
+	$(v,v'')$ lies on an r-admissible path leading to a node in $\mathit{Front}(v)$
+	with rank $k$, where $r+1 \leq k \leq h$, for some $r$ and satisfies
+	only $cond4$. Further, assume there is a $v'$ with $v' \neq v''$ and
+	$(v,v')$ lies on an r-admissible path leading to a node in $\mathit{Front}(v)$
+	with rank $r$, and there does not exist an admissible strategy
+	$\sigma$ satisfying $\sigma(v) = v'$. If only $cond4$ is satisfied
+	for the pair $(v,v'')$, then there is at least one potentially
+	hazardous node $u$ with $rank(u) = -1$ in the r-admissible path
+	$Q$. From Lemma~\ref{lemma3}, there is no guarantee that a node in
+	$\mathit{Front}(v)$ with rank $k > r$ will be reached. Hence it cannot be said that $val(\sigma',\rho,v) > val(\sigma,\rho,v)$ for any
+	\textit{Player~2} strategy $\rho$, thus arriving at a
+	contradiction. Hence both $\sigma$ and $\sigma'$ are admissible. 
+\end{proof}
+
+\begin{theorem}
+	\label{theorem2}
+	The following statements are equivalent:
+	\begin{enumerate}
+		\item $\sigma$(v) = v' for an admissible \textit{Player~1} strategy $\sigma$ where $v \in V_{1} \backslash W$ and $W$ is reachable from $v$ in $G$
+		\item the pair $(v,v')$ satisfies one of the following statements where $1 \leq r \leq h$:
+		\begin{enumerate}
+			\item $cond1$
+			\item $\sim cond1 \Rightarrow cond2$
+			\item $\sim(cond1 \vee cond2) \Rightarrow cond3$
+			\item $\sim(cond1 \vee cond2 \vee cond3) \Rightarrow cond4$.
+		\end{enumerate}
+	\end{enumerate}
+\end{theorem}
+\begin{proof}
+	$\mathit{1} \Rightarrow \mathit{2}$
+	\newline By Lemma~\ref{lemma2} $(v,v')$ lies on an r-admissible path $Q$ from $v$ to $u \in \mathit{Front}(v)$. Let $u$ be of rank $r$.
+	\newline \textit{Case 1: r = h}
+	\newline For the sake of contradiction assume that none of the above four statements is true. For this to hold, all the conditions $cond1$ to $cond4$ are required to be false. Since $r = h$, $cond2$ and $cond3$ are false. Since $cond1$ is false and $\sigma$ is an admissible strategy, it can be concluded that $\mathrm{\mathit{PH}}(Q) \neq \emptyset$. Since statement (d) and therefore $cond4$ is false, by Lemma~\ref{lemma2} $\mathrm{\mathit{PH}}(Q) = \emptyset$ for all r-admissible paths $Q$, which is a contradiction.  
+	\newline \textit{Case 2: $r \neq h$}
+	\newline Again for the sake of contradiction assume that none of the above four statements is true. Since $r \neq h$, $cond1$ is false. Since, Lemma~\ref{lemma4} holds for all admissible strategies $\sigma'$ with $\sigma'(v) = v''$ and $v'' \neq v'$, the pair $(v,v'')$ lies on an r-admissible path leading to a node in $\mathit{Front}(v)$ with rank $k$, where $r+1 \leq k \leq h$, for some $r$ and satisfies only $cond4$ among the four conditions on page 22-23. Since by assumption statement (b) is false, $cond2$ is false. Since $\sigma$ is an admissible strategy, it can be concluded that either of the following two properties must hold for $Q$:
+	\begin{enumerate}
+		\item $\mathrm{\mathit{PH}}(Q) = \emptyset$
+		\item $\exists w \in \mathrm{Nodes}(Q)[1 \leq rank(w) < r]$.
+	\end{enumerate}
+	Since by assumption, $cond3$ is also false, and $\sigma$ is an admissible strategy, it can be concluded that $\mathit{PH}(Q) \neq \emptyset$. This implies property 2 must hold and property 1 must not for $cond2$ and $cond3$ to be false at the same time. Since statement (d) and therefore $cond4$ is false, by Lemma~\ref{lemma2} $\mathrm{\mathit{PH}}(Q) = \emptyset$ for all r-admissible paths $Q$, which is a contradiction.
+	\newline $\mathit{2} \Rightarrow \mathit{1}$
+	\newline For the sake of contradiction assume that one of the four statements is true and $\sigma(v) \neq v'$ for all admissible strategies $\sigma$. If statement (a) is true and therefore $cond1$ is true, from the first observation in the proof of Lemma~\ref{lemma3} any r-admissible path starting with the pair $(v,v')$ will inevitably reach a node in $\mathit{Front}(v)$. Hence $\sigma$ is admissible which is a contradiction. If statement (b) is true and statement (a) is false, then $cond1$ is false and $cond2$ is true, from the first observation in the proof of Lemma~\ref{lemma3} any r-admissible path starting with the pair $(v,v')$ will inevitably reach a node in $\mathit{Front}(v)$. Hence $\sigma$ is admissible, a contradiction. If statement (c) is true and statements (a) and (b) are false, then $cond1$ and $cond2$ are false and $cond3$ is true. Since $cond3$ is true, from the first observation in the proof of Lemma~\ref{lemma3} any r-admissible path starting with the pair $(v,v')$ will inevitably reach a node in $\mathit{Front}(v)$. Hence $\sigma$ is admissible, a contradiction. If statement (d) is true and statements (a), (b) and (c) are false, then only $cond4$ is true. If $r = h$ and conditions $cond1$ to $cond3$ are false, $\sigma$ is admissible. Otherwise, from Lemma~\ref{lemma4} it is known that for all admissible strategies $\sigma'$ with $\sigma'(v) = v''$, the pair $(v,v'')$ lies on an r-admissible path leading to a node in $\mathit{Front}(v)$ with rank $k$, where $r+1 \leq k \leq h$, for some $r$ and satisfies only $cond4$. Hence $\sigma$ is admissible, which is again a contradiction. 
+\end{proof}
+
+The following result about the correctness of Algorithm~\ref{alg:algorithm5} is a consequence of Theorem~\ref{theorem2}.
+
+\begin{corollary}
+	\label{corollary2}
+	Algorithm~\ref{alg:algorithm5} returns all the admissible strategies for a reachability game.
+\end{corollary}
+
+\section{Complexity}
+The time complexity of Algorithm~\ref{alg:algorithm4} is $O(|V| +
+|E|)$. Step 3 of Algorithm~\ref{alg:algorithm5} takes $O(|V| + |E|)$
+time. In step 5, computing the set of all paths takes
+$O((|V|+|E|)*(|P|+1))$ time~\cite{ElementaryCircuits}, where $|P|$ is
+the number of paths. In steps 16 through 30, to determine an edge from
+$p_{1}$ to $p_{2}$ for $p_{1}, p_{2} \in V'$, all paths need to be checked from $p_{1}$ to $p_{2}$ which takes $O(|P|^{2})$
+time. Algorithm~\ref{alg:algorithm6} requires $O(|\mathit{Front}(v)|)$
+time to compute the rank of a vertex. Algorithm~\ref{alg:algorithm7}
+runs for every component $C$ in $G'$. The computation of
+Algorithm~\ref{alg:algorithm7} takes $O(|P|^{2})$ time. Hence the
+overall complexity of Algorithm~\ref{alg:algorithm5} is $O(|V| + |E| +
+|V_{1} \backslash W|*((|V|+|E|)*(|P|+1) + |P|^{2} +
+|\mathit{Front}(v)| + |C|*|P|^{2}))$, where $|C|$ denotes the number
+of components in $G'$ for $v \in V_{1} \backslash W$. This is
+$O(|V|!)$, \ie, $O(2^{|V|log|V|})$.

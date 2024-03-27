@@ -1,0 +1,52 @@
+%%% Thesis Introduction --------------------------------------------------
+\chapter{Introduction}
+\label{Sec:Introduction}
+Games played on finite graphs, typically involving two players, have
+been a subject of widespread investigation in the field of computer
+science, with applications primarily in the field of controller
+synthesis~\cite{SynthesisOfReactiveModule}. Typically, a winning
+strategy for \textit{Player~1} (the system) against \textit{Player~2}
+(the environment) gives rise to a controller that satisfies a given
+specification.
+
+The games considered have a set of winning and losing nodes for
+\textit{Player~1}. In this work, the primary focus is on losing nodes
+and attempt to achieve \textit{best-effort strategies}, also known as
+\textit{admissible strategies}~\cite{OmegaRegularGames}. In many
+applications finding such a best-effort strategy when a winning
+strategy does not exist from a given node is very useful. Instances of
+such applications are problems which do not involve a strong sense of
+competition, \ie, \textit{Player~2} can be cooperative rather than
+adversarial or more realistically when \textit{Player~2} is rational,
+\ie, focused more on achieving its own objective rather than thwarting
+\textit{Player~1} from meeting its goal. This happens, for instance,
+in component-based systems where the components are autonomous agents
+such as robots which have their own objectives to meet and are not
+necessarily adversarial. In such cases, \textit{Player~1} can end up
+winning if this does not prevent \textit{Player~2} from meeting its
+goal, even if there is no strategy that will win against all
+\textit{Player~2} strategies.
+
+\textit{Safety} and \textit{reachability} are two very important goals
+in system design. Safety requires plays to remain forever within a
+safe set of nodes, whereas reachability requires a set of nodes to be
+visited after finitely many steps. The work computes admissible
+strategies for these two types of objectives.
+
+Admissible strategies are also known as \textit{non-dominated
+	strategies} \ie, the game can be lost by such strategies if and only
+if no other strategy can win the game starting from the same node
+against any strategy of \textit{Player~2}. In this work, the
+perspective of \textit{Player~1} is taken into consideration. The semantics are defined
+analogously when played from \textit{Player~2's} perspective and the
+algorithms hold good. The notion of \textit{admissibility} is slightly
+different from Faella~\cite{AdmissibleInfiniteGames} and is consistent
+with the definition of Brenguier \etal~\cite{OmegaRegularGames}.
+
+The rest of the thesis is organized as follows. First the
+related work done in this area is discussed in Chapter~\ref{Sec:RelatedWork},
+followed by the preliminaries and definitions
+in \ref{Sec:Preliminaries}. Then the two algorithms
+developed for safety and reachability objectives are discussed in
+Chapters~\ref{Sec:Safety} and \ref{Sec:Reachability} respectively,
+along with their time complexity.

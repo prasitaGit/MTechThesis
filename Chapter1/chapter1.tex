@@ -1,0 +1,70 @@
+\chapter{Related Work}
+\label{Sec:RelatedWork}
+Determining the winning set of nodes and the winning strategies in a
+graph game had been a primary concern in the past, and significant
+work has been done for safety, reachability and more general
+$\omega$-regular objectives in this
+area~\cite{AutomataLogicsInfiniteGames}. Work on cooperation and
+rational behavior of players is now an emergent area of
+research~\cite{AssumptionSynthesis,PerimeterOfWorldModel,CompositionalSynthesis,AdmissibleInfiniteGames,RationalSynthesis}.
+
+Faella~\cite{AdmissibleInfiniteGames} discussed the potential benefits
+of real world applications in playing a game from a \textit{losing}
+node in a rational way to achieve the best possible results. His
+primary focus was on \textit{best-effort strategies} by relying on the
+cooperation of the other player. He outlined a procedure to compute
+admissible strategies for \emph{positional} and
+\textit{prefix-independent} goals, where the latter are goals closed
+under adding or deleting finite prefixes to/from its elements. But he
+did not provide a method for goals which are not prefix-independent,
+such as safety and reachability. He claimed that if all \textit{Player
+	2} nodes are treated as \textit{Player~1} nodes, then the winning
+strategies obtained, called \emph{cooperatively winning}, are also
+admissible for safety and reachability objectives. It is shown via
+examples that this claim is incorrect and algorithms are provided for
+finding admissible strategies for safety and reachability objectives,
+arguably the most important among all goals which are
+non-prefix-independent.
+
+Bloem \etal~\cite{AssumptionSynthesis} discussed various approaches
+for dealing with assumptions on environment behavior while solving
+games. They proposed four goals which should be met by all system
+designs, out of which what is relevant here is the goal of ``not
+giving up'' when the system guarantee cannot be enforced under
+worst-case assumptions. As mentioned above, in many situations, the
+environment may not be perfectly adversarial and provide the
+worst-case input. In such cases, it makes sense for the system to try
+to meet its goal as much as possible, assuming some level of
+cooperation from the environment. The work addresses precisely this
+situation, finding admissible strategies for the important cases of
+safety and reachability objectives. Note that, by definition,
+admissible strategies make the minimal assumptions about cooperation
+from the other player.
+
+Damm and
+Finkbeiner~\cite{PerimeterOfWorldModel,CompositionalSynthesis}
+proposed algorithms for synthesizing and verifying dominant strategies
+which is based on construction of tree automata for objectives
+specified in LTL.  The notion of dominant strategy considered in the
+work is identical to what is called an admissible strategy in this
+work. The work is a special case of
+\cite{PerimeterOfWorldModel,CompositionalSynthesis}, which considers
+safety and reachability objectives. The algorithms developed are also much
+simpler, based primarily on graph-theoretic notions and of lower
+complexity than the double exponential algorithm in
+\cite{PerimeterOfWorldModel,CompositionalSynthesis}.
+
+
+In \cite{RationalSynthesis}, Fisman \etal\ introduce the idea of
+rational synthesis, \ie, synthesis in the context of multiple
+autonomous agents where each agent has a goal of its own and the goals
+are not necessarily adversarial. The approach provides a strategy not
+just for the agent in question (called the \emph{system agent} in
+\cite{RationalSynthesis}) but for all the agents such that the
+specification of the system agent is satisfied and the strategy
+profile for all the agents meet some desired solution concept, such as
+the existence of a dominant strategy, Nash equilibrium, or
+subgame-perfect equilibrium. In such equilibria, no agent has the
+incentive to unilaterally deviate from its strategy. While admissible
+strategies are clearly related to the problem of rational synthesis,
+exploring the exact relationship is part of future work.

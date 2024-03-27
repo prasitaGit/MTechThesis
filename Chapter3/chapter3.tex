@@ -1,0 +1,180 @@
+\chapter{Admissible Strategies for Safety Games}
+\label{Sec:Safety}
+In this chapter, the algorithm is described for finding admissible
+strategies for safety games and proof for its correctness is provided.  Here the
+controllable predecessor operator $\mathit{CPre}(T)$ for $T \subseteq
+V$ determines the set of nodes from which \textit{Player~1} can force
+the game to move to a node in $T$ in one step:
+$\mathit{CPre}(T) = \{u | u \in V_{1} \: and \: \exists v \in T, (u,v) \in E \}\cup \{u | u \in V_{2} \: and \: \forall v, (u,v) \in E \Rightarrow v \in T\}$.
+
+Algorithm~\ref{alg:algorithm1} presented below computes the
+set of winning nodes for safety games specified by a safe set $S$,
+while playing from the perspective of \textit{Player~1}. It computes
+the winning nodes by computing the greatest fixed point of a monotone
+operator on $(2^{V}, \subseteq)$~\cite{SynthesisInfiniteGames}.
+
+\begin{algorithm}
+	\caption{Winning Nodes for Safety Games}
+	\textbf{Input} Game structure $G := (V,E)$ and $S \subseteq V$, the set of safe nodes \\ 
+	\textbf{Output} Set of winning nodes $W$
+	\label{alg:algorithm1}
+	\begin{algorithmic}[1]
+		\STATE \textit{T} := S
+		\STATE $Y_{0}$ := \textit{T}
+		\STATE i := 1
+		\STATE $Y_{i}$ := $\textit{T} \cap \mathit{CPre}(Y_{i-1})$
+		\STATE if $Y_{i} \neq Y_{i-1}$ then i := i + 1. Goto step 4
+		\STATE $W$ := $Y_{i}$
+		\STATE \textbf{return} $W$
+	\end{algorithmic}
+\end{algorithm}
+
+
+
+Before presenting the algorithm for computing admissible strategies
+for safety games (Algorithm~\ref{alg:algorithm2}), a few
+definitions are needed. These definitions apply to the subgraph $G' := (S,E')$ of
+$G$ induced by the safe set $S$ of nodes, since for nodes in $V
+\backslash S$ all strategies are losing for \textit{Player~1}.
+
+A \textit{potentially winning node} is a \textit{Player~2} node not in
+$W$ (\ie, it is a losing node for \textit{Player~1}) which lies on a
+cycle contained in the safe set $S$. A \textit{safety-admissible
+	cycle} (s-admissible cycle in brief) is a cycle that lies within $S$
+and contains at least one potentially winning node and does not
+contain a node in $W$. An s-admissible cycle $C$ with a set of
+potentially winning nodes $H$ is \textit{minimal} if there is no other
+s-admissible cycle $C'$ with the set of potentially winning nodes $H'$
+such that $H'$ is strictly contained in $H$. \textit{Paths}($u$,$v$)
+is the set of paths from $u$ to $v$ in the subgraph $G'$ of $G$
+induced by $S$. Minimal s-admissible cycles play a crucial role in
+identifying all admissible strategies for safety games. At any
+\textit{Player~1} node $v$ in a minimal s-admissible cycle $C$, if
+\textit{Player~1} chooses its successor in $C$ as the next node, then
+this gives rise to an admissible strategy. Also, for a \textit{Player
+	1} node $v$ in $S \backslash W$, which is not in an s-admissible
+cycle, the work defines a \textit{minimal safety-admissible path} (minimal
+s-admissible path in brief) from $v$ as a path $P$ from $v$ in $S$
+leading either to a minimal s-admissible cycle or to a node in $W$
+satisfying the following minimality condition: for no other path $Q$
+from $v$ leading either to a minimal s-admissible cycle or to a node
+in $W$ is the set of potentially winning nodes on $Q$ a proper subset
+of the corresponding set on $P$. At any \textit{Player~1} node $v$ on a
+minimal s-admissible path $P$, if \textit{Player~1} chooses its
+successor in $P$ as the next node, then this also gives rise to an
+admissible strategy. The work claims that identifying all minimal
+s-admissible cycles and minimal s-admissible paths is necessary and
+sufficient for identifying all admissible strategies. This claim is
+proved in Theorem~\ref{theorem1} below.
+
+Algorithm~\ref{alg:algorithm2} is presented, which computes
+the set of admissible strategies for safety games. In step 1, the winning set of nodes $W$ for \textit{Player~1} is computed using
+Algorithm~\ref{alg:algorithm1}. In step 2, the subgraph
+$G'$ of $G$ induced by $S$ is constructed. For every node $v$ that is in $(V_{1} \cap
+S) \backslash W$, Algorithm~\ref{alg:algorithm3} is executed to determine the set of admissible strategies. In steps 5,6 and 7 the work outputs the set of all admissible strategies for \textit{Player~1}
+nodes. If a node is winning, \textit{Player~1} can play according to
+any winning strategy. If a node is not in $S$, \textit{Player~1} can
+play arbitrarily. For the remaining nodes, \textit{Player~1} plays
+according to the strategies obtained from Algorithm~\ref{alg:algorithm3}.
+
+\begin{algorithm}
+	\caption{Admissible Strategies for Safety Games}
+	\textbf{Input} Game structure $G := (V,E)$ and $S \subseteq V$, the set of safe nodes \\ 
+	\textbf{Output} Set of admissible strategies for \textit{Player~1} nodes
+	\label{alg:algorithm2}
+	\begin{algorithmic}[1]
+		\STATE Compute the set of winning nodes $W$ for \textit{Player~1} using Algorithm~\ref{alg:algorithm1}
+		\STATE Construct subgraph $G' := (S,E')$ of $G$ induced by $S$
+		\STATE Mark every $v \in (V_{1} \cap S) \backslash W$ as not visited
+		\STATE For every node in step 3 which is not visited, execute Algorithm~\ref{alg:algorithm3} on $v$
+		\STATE At any \textit{Player~1} node $v \in W$, play according to any winning strategy
+		\STATE At any \textit{Player~1} node $v \notin S$, choose an arbitrary move
+		\STATE At any remaining \textit{Player~1} node $v \in S$, play according to strategies returned for $v$ in Algorithm~\ref{alg:algorithm3}
+	\end{algorithmic}
+\end{algorithm}
+
+Algorithm~\ref{alg:algorithm3} presented below computes the values of
+all admissible strategies for a \textit{Player~1} node $v$,
+considering the induced subgraph $G' := (S,E')$. For each such node
+$v$ set $PW(v)$ is maintained, each element of which is a pair
+consisting of one of the following:
+\begin{enumerate} 
+	\item a set of potentially winning \textit{Player~2} nodes on an s-admissible path from $v$ to a set in $W$ and $v'$ the successor of $v$ on such a path, or
+	\item a set of potentially winning \textit{Player~2} nodes on an s-admissible cycle containing $v$, and $v'$ the successor of $v$ on such a cycle, or
+	\item a set of potentially winning \textit{Player~2} nodes on a path from $v$ which is an s-admissible path followed by an s-admissible cycle (also called a \textit{safety-admissible lasso} (s-admissible lasso in brief)) and $v'$ the successor of $v$ on such a lasso.
+\end{enumerate}
+The algorithm explores every path starting from $v$.  Whenever one of the following happens, update $PW(v)$: 
+\begin{enumerate} 
+	\item a node $u \in W$ is encountered, or
+	\item an s-admissible cycle containing $v$ is found or,
+	\item an s-admissible path leading to an s-admissible cycle is found.
+\end{enumerate} 
+Admissible strategies are determined by finding the minimal sets $MinPW(v)$ in $PW(v)$, \ie, ones that are not strictly contained in any other set, for each successor $v'$ of $v$. Then an admissible strategy will always choose an edge $(v,v')$ which lies on a path containing the set of potentially winning nodes $v$ such that $(v,v') \in MinPW(v)$.
+
+\begin{algorithm}
+	\caption{Values of admissible strategies at $v \in (V_{1} \cap S) \backslash W$}
+	\textbf{Input} $v\in V_{1}$ \\ 
+	\textbf{Output} Values of all admissible strategies for $v$
+	\label{alg:algorithm3}
+	\begin{algorithmic}[1]
+		\STATE Mark $v$ as visited
+		\STATE Initialize $PW(v) \: := \: \emptyset$
+		\STATE Explore every path from $v$ and update $PW(v)$ when one of the following happens:
+		\begin{case}
+			A node $u \in W$, the winning set of nodes is encountered
+			\newline $PW(v) := PW(v) \cup (\{ X | X$ is the set of all \textit{Player~2} nodes on the path from $v$ to $u\in W\},v')$, where $v'$ is the successor of $v$ on the path    
+		\end{case}
+		\begin{case}
+			An s-admissible cycle containing $v$ is found
+			\newline $PW(v) := PW(v) \cup (\{ X | X$ is the set of all \textit{Player~2} nodes on the s-admissible cycle containing $v\},v')$, where $v'$ is the successor of $v$ on the s-admissible cycle
+		\end{case}
+		\begin{case}
+			An s-admissible lasso is found
+			\newline $PW(v) := PW(v) \cup (\{ X | X$ is the set of all \textit{Player~2} nodes on the s-admissible lasso$\},v')$, where $v'$ is the successor of $v$ on the s-admissible lasso
+		\end{case}
+		\STATE Determine all minimal s-admissible paths and cycles by comparing the sets in $PW(v)$ for each $v'$ with respect to containment and store them in $MinPW(v)$
+		\STATE Store the $(v,v')$ obtained in step 4 in the set $Next(v)$
+		\STATE If $Next(v) \neq \emptyset$ then, \textbf{return} each element of $Next(v)$ as values of admissible strategies at $v$
+		\STATE else \textbf{return} all pairs $(v,v') \in E$ as values of admissible strategies at $v$
+	\end{algorithmic}
+\end{algorithm}
+\begin{theorem}
+	\label{theorem1}
+	The following statements are equivalent:
+	\begin{enumerate}
+		\item $\sigma$ is an admissible \textit{Player~1} strategy
+		\item $\sigma(v) = v'$, where $v$ is a \textit{Player~1} node
+		satisfying one of the following conditions:
+		\newline (i) $v \in S \backslash W$ and $v$ lies on a minimal s-admissible cycle, or $v$ lies on a minimal s-admissible lasso or there is a minimal s-admissible path from $v$ to a node in $W$, and $v'$ is the successor of $v$ on such a cycle or lasso or path, or
+		\newline (ii) $v \in W$ and $\sigma^{'}(v) = v'$ for some winning strategy $\sigma^{'}$, or
+		\newline (iii) $v$ is any other node, \ie, $v \notin S$, and $\sigma(v)$ is any successor of $v$ in $G$
+	\end{enumerate}
+\end{theorem}
+\begin{proof}
+	$\mathit{1} \Rightarrow \mathit{2}$
+	\newline Suppose $\sigma$ is an admissible \textit{Player~1} strategy such that for some \textit{Player~1} node $v \in S \backslash W$ $\sigma(v) = v'$ is not the successor of $v$ in a minimal s-admissible cycle, a minimal s-admissible path or a minimal s-admissible lasso. Clearly $v'$ must either be on an s-admissible path or on an s-admissible cycle or lasso, since otherwise even \textit{Player~2's} cooperation cannot ensure that the resulting play is in $S$. Suppose $v'$ is on an s-admissible cycle $C'$, which has the set of potentially winning nodes $H'$ which is not minimal, and hence by assumption there is a successor $v''$ of $v$ on an s-admissible path leading to a node in $W$, cycle or lasso with the potentially winning node set being $H"$, such that $H"$ is strictly contained inside $H'$. Let $u \in H' \backslash H"$. Then $val(\sigma,\rho,v) < val(\sigma',\rho,v)$, where $\sigma$ is identical to $\sigma'$ at all nodes except at node $v$ where $\sigma'(v) = v''$ and the \textit{Player~2} strategy $\rho$ plays according to the winning strategy for \textit{Player~2} at $u$ \ie, it takes the game outside $S$ (which exists by definition of a potentially winning node) and cooperates at every other node, \ie, chooses a successor node in the s-admissible cycle. This is a contradiction. The case for $v'$ being on an s-admissible path or lasso is similar. 
+	\newline $\mathit{2} \Rightarrow \mathit{1}$
+	\newline Suppose $\sigma$ is a \textit{Player~1} strategy satisfying the following: for $v \in S \backslash W$ lying on an s-admissible path or cycle $\sigma(v) = v'$, where $v'$ is the successor of $v$ in a minimal s-admissible cycle; for $v \in W$, $\sigma$ plays according to any winning strategy, and for any other $v$ plays arbitrarily. Suppose $\sigma$ is not admissible, \ie, it is dominated by a \textit{Player~1} strategy $\sigma'$. Clearly for nodes in $W$ and nodes in $S \backslash W$ from which there is no s-admissible paths, cycles or lassos, $\sigma'$ cannot be better than $\sigma$. Suppose $val(\sigma,\rho,v) < val(\sigma',\rho,v)$ at some node $v$, where $v$ lies on an s-admissible cycle, path or lasso. This implies that $Out(\sigma,\rho,v) \notin \mathit{Win}$ but $Out(\sigma',\rho,v) \in \mathit{Win}$.
+	Then $Out(\sigma',\rho,v)$ must be an s-admissible cycle, s-admissible lasso or contain an s-admissible path leading to a winning node. By assumption $\sigma(v) = v'$ for $v \in S \backslash W$ lying on a minimal s-admissible path or cycle where $v'$ is the successor of $v$ on such a path, cycle or lasso. This means that there is a potentially winning \textit{Player~2} node $u$ on an s-admissible path, lasso or cycle from $v$ which occurs on $Out(\sigma',\rho,v)$ but not on $Out(\sigma,\rho,v)$. This implies there is a \textit{Player~2} strategy $\rho$ (in which \textit{Player~2} cooperates at every potentially winning node on $Out(\sigma,\rho,v$) but not at $u$) where $Out(\sigma,\rho,v) \in \mathit{Win}$ but $Out(\sigma',\rho,v) \notin \mathit{Win}$. This is a contradiction since $\sigma$ is dominated by $\sigma'$. 
+\end{proof}
+
+\begin{corollary}
+	Algorithm~\ref{alg:algorithm2} finds all admissible strategies for a safety game.
+\end{corollary}
+\begin{proof}
+	A \textit{Player~1} node $v$ is losing if all its successor nodes are losing. From Theorem~\ref{theorem1} the correctness of admissible strategies for minimal s-admissible paths, cycles and lassos is obtained. From the algorithm, there are three cases:
+	\newline \textit{Case 1}: $v$ has a minimal s-admissible path to $u \in W$. If \textit{Player~1} plays according to the strategy that leads to such a path, then it is admissible as \textit{Player1} can play according to any winning strategy from $u$.
+	\newline \textit{Case 2}: $v$ belongs to a minimal s-admissible cycle. A strategy $\sigma(v) = v'$ where $(v,v')$ lies in a minimal s-admissible cycle is an admissible strategy, whose correctness is proved by Theorem~\ref{theorem1}. 
+	\newline \textit{Case 3}: $v$ belongs to a minimal s-admissible path that leads to an s-admissible cycle. A strategy $\sigma(v) = v'$ where $(v,v')$ lies in a minimal s-admissible path that leads to an s-admissible cycle is an admissible strategy, as a consequence of Theorem~\ref{theorem1}. 
+\end{proof}
+
+\section{Complexity}
+The complexity of Algorithm~\ref{alg:algorithm1} is $O(|V| +
+|E|)$. For Algorithm~\ref{alg:algorithm2}, determining all possible cycles and
+paths for a node $v$ is
+$O((|V|+|E|)*(|C|+1))$~\cite{ElementaryCircuits} where $|C|$ the
+number of cycles. Comparing the cycles and paths for minimality takes
+$O(|P|^{2} + |C|^{2})$ time, where $|P|$ is the number of paths. Hence
+the overall complexity can be expressed as: O($|V| + |E| + |V_{1}
+\backslash W|(|P|^{2} + |C|^{2} + (|V|+|E|)*(|C|+1))$), which is
+$O(|V|!)$, \ie, $O(2^{|V|log|V|})$.
